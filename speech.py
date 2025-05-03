@@ -30,16 +30,33 @@ def transcribe_speech():
 
 
 # Main function to display the Streamlit UI
+import streamlit as st
+import speech_recognition as sr
+
+def recognize_audio_file(audio_file):
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(audio_file) as source:
+        audio = recognizer.record(source)
+    return recognizer.recognize_google(audio)
+
 def main():
     st.title("Speech Recognition App")
-    st.write("Click on the button below to start speaking:")
+    st.write("Upload an audio file to transcribe")
 
-    # Add a button to trigger speech recognition
-    if st.button("Start Recording"):
-        # Call transcribe_speech to get the transcribed text
-        transcription = transcribe_speech()
-        st.write("Transcription: ", transcription)
+    uploaded_file = st.file_uploader("Choose an audio file", type=["wav", "mp3"])
 
+    if uploaded_file is not None:
+        st.info("Transcribing...")
+        try:
+            text = recognize_audio_file(uploaded_file)
+            st.success("Transcription successful!")
+            st.write("Transcribed Text:")
+            st.write(text)
+        except Exception as e:
+            st.error(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
+
+
+
